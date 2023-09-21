@@ -1,4 +1,5 @@
 Anti-Static ToolBox v 1.0
+Script UI Panel for Adobe® After Effects
 by James Zelasko
 2023
 
