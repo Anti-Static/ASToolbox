@@ -2197,6 +2197,7 @@ function ProximityCreateTargetPoint(){
     targetNull.name = "AS : Proximity Re-order Target";
   }
 }
+
 function ProximityReOrder() {
   app.beginUndoGroup("AS : Reorder Based On Proximity");
   var myComp = app.project.activeItem;
@@ -2206,7 +2207,7 @@ function ProximityReOrder() {
     return false;
   }
   var layersMoved = 1;
-  //selectedLayers[0].moveToBeginning();
+  var firstIndex = selectedLayers[0].index;
 
   var centerPos = [myComp.width / 2, myComp.height / 2];
   for (var e = 1; e < myComp.layers.length; e++) {
@@ -2232,7 +2233,7 @@ function ProximityReOrder() {
       } else {
         if (g == layersMoved) {
           if(layer!=lx){
-            layer.moveAfter[lx];
+            layer.moveAfter(lx);
           }
           layersMoved++;
           break;
@@ -2240,7 +2241,6 @@ function ProximityReOrder() {
       }
     }
   }
-  //alert("moved : "+layersMoved);
   app.endUndoGroup();
 }
 
@@ -2653,7 +2653,7 @@ function WiggleManager() {
     }
   }
   if(!supported){
-    alert("Only one, two, or three dimenstional numbers and colors are supported.");
+    alert("Only one, two, or three dimensional numbers and colors are supported.");
     return false;
   }
 
@@ -2972,7 +2972,7 @@ function Stringer(am, tanCheck, closedCheck, existingCheck) {
         outTan.property("Position").setValue(nullPoint.property("Position").value);
         var oStr = "";
         oStr += "var i = thisComp.layer('in tangent "+ controllerNum + "-" + x+"');\n";
-        oStr += "var p = thisComp.layer('String Point "+ controllerNum + "-" + x+"');\n";
+        oStr += "var p = thisComp.layer('"+ nullPoint.name +"');\n";
         oStr += "if(i.effect('Lock tangents')('Checkbox').value){\n\t";
         oStr += "if(thisLayer.hasParent){\n\t\t";
         oStr += "if(thisLayer.parent==p){\n\t\t\t";
@@ -3432,7 +3432,7 @@ function PropertyManager() {
     }
   }
   if(!supported){
-    alert("Only one, two, or three dimenstional numbers and colors are supported.");
+    alert("Only one, two, or three dimensional numbers and colors are supported.");
     return false;
   }
 
@@ -3475,7 +3475,7 @@ function PropertyManager() {
           expStr += "}else{\n";
           expStr += "\t[v1, v2];\n";
           expStr += "}";
-        } else if(p.propertyValueType == PropertyValueType.COLOR){
+        } else if(currentProp.propertyValueType == PropertyValueType.COLOR){
           if (l == 0) {
             var pccon = controller.effect.addProperty("ADBE Color Control");
             pccon.name = currentProp.name;
