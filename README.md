@@ -13,6 +13,7 @@ Installation:
 Drag "Anti-Static ToolBox.jsx" to your After Effects ScriptUI Panels folder:
 
 macOS : Applications/Adobe After Effects <version>/Scripts/ScriptUI Panels
+
 Windows: Program Files\Adobe\Adobe After Effects <version>\Support Files\Scripts\ScriptUI Panels
 
 --------------------------------
