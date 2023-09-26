@@ -1,5 +1,5 @@
 // Anti-Static ToolBox
-// v 1.0
+// v 1.1
 // by James Zelasko
 // This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
 // http://creativecommons.org/licenses/by-sa/4.0/
@@ -1816,7 +1816,6 @@ RadialPositionButton.onClick = function() {
   RadialPosition(Number(RadialPositionRadiusTextbox.text), Number(RadialPositionDuplicateTextbox.text), RadialPositionDuplicateCheck.value, RadialPositionRotateCheck.value);
 }
 
-
 //GridPositions --------------------------------------------------------------------
 GridPositionsDuplicateCheck.onClick = function() {
   if (GridPositionsDuplicateCheck.value) {
@@ -1892,7 +1891,6 @@ GapColTextbox.onChange = function() {
 GridPositionsButton.onClick = function() {
   GridPositions(GridCountRowTextbox.text, GridCountColTextbox.text, GridCountStepTextbox.text, UnifyGridCountCheck.value, GapRowTextbox.text, GapColTextbox.text, GapStepTextbox.text, UnifyGapCheck.value, GridPositionsDuplicateCheck.value, GridPositions3DCheck.value);
 }
-
 
 //Randomizer --------------------------------------------------------------------
 RandomizerScaleCheck.onClick = function() {
@@ -2316,8 +2314,17 @@ function RandomizePositions(x, y, z) {
   var comp = app.project.activeItem;
   var selectedLayers = comp.selectedLayers;
   for (var k = 0; k < selectedLayers.length; k++) {
-    //alert(k);
-    var currentPos = selectedLayers[k].property("Position").value;
+    var currentLayer = selectedLayers[k];
+    var currentPos = [comp.width, comp.height];
+    if (currentLayer.property("Position").dimensionsSeparated){
+      if(currentLayer.threeDLayer){
+        currentPos = [currentLayer.property("Transform").property("X Position").value, currentLayer.property("Transform").property("Y Position").value, currentLayer.property("Transform").property("Z Position").value];
+      }else{
+        currentPos = [currentLayer.property("Transform").property("X Position").value, currentLayer.property("Transform").property("Y Position").value];
+      }
+    }else{
+      currentPos = currentLayer.property("Position").value;
+    }
     nX = currentPos[0];
     nY = currentPos[1];
     nZ = currentPos[2];
@@ -2334,10 +2341,31 @@ function RandomizePositions(x, y, z) {
       var zt = z / 2;
       nZ += (Math.random() * (zt * 2)) - zt;
     }
-    if (selectedLayers[k].property("Position").numKeys == 0) {
-      selectedLayers[k].property("Position").setValue([nX, nY, nZ]);
-    } else {
-      selectedLayers[k].property("Position").setValueAtTime(comp.time, [nX, nY, nZ]);
+
+    if (currentLayer.property("Position").dimensionsSeparated){
+      if (currentLayer.property("Transform").property("X Position").numKeys == 0) {
+        currentLayer.property("Transform").property("X Position").setValue(nX);
+      }else{
+        currentLayer.property("Transform").property("X Position").setValueAtTime(comp.time, nX);
+      }
+      if (currentLayer.property("Transform").property("Y Position").numKeys == 0) {
+        currentLayer.property("Transform").property("Y Position").setValue(nY);
+      }else{
+        currentLayer.property("Transform").property("Y Position").setValueAtTime(comp.time, nY);
+      }
+      if(currentLayer.threeDLayer){
+        if (currentLayer.property("Transform").property("Z Position").numKeys == 0) {
+          currentLayer.property("Transform").property("Z Position").setValue(nZ);
+        }else{
+          currentLayer.property("Transform").property("Z Position").setValueAtTime(comp.time, nZ);
+        }
+      }
+    }else{
+      if (currentLayer.property("Position").numKeys == 0) {
+        currentLayer.property("Position").setValue([nX, nY, nZ]);
+      } else {
+        currentLayer.property("Position").setValueAtTime(comp.time, [nX, nY, nZ]);
+      }
     }
   }
   app.endUndoGroup();
@@ -2346,17 +2374,27 @@ function RandomizePositions(x, y, z) {
 
 function StaggerPositions(x, y, z) {
   app.beginUndoGroup("AS : Stagger Positions");
+  var comp = app.project.activeItem;
   var beginPos = [0, 0, 0];
   var selectedLayers = app.project.activeItem.selectedLayers;
   for (var k = 0; k < selectedLayers.length; k++) {
-    var currentPos = selectedLayers[k].property("Position").value;
+    var currentLayer = selectedLayers[k];
+    var currentPos = [comp.width, comp.height];
+    if (currentLayer.property("Position").dimensionsSeparated){
+      if(currentLayer.threeDLayer){
+        currentPos = [currentLayer.property("Transform").property("X Position").value, currentLayer.property("Transform").property("Y Position").value, currentLayer.property("Transform").property("Z Position").value];
+      }else{
+        currentPos = [currentLayer.property("Transform").property("X Position").value, currentLayer.property("Transform").property("Y Position").value];
+      }
+    }else{
+      currentPos = currentLayer.property("Position").value;
+    }
     var nX = currentPos[0];
     var nY = currentPos[1];
     var nZ = currentPos[2];
     if (k == 0) {
       beginPos = currentPos;
     } else {
-      var layer = selectedLayers[k];
       if (x != null) {
         var xt = x * k;
         nX = beginPos[0] + xt;
@@ -2370,12 +2408,31 @@ function StaggerPositions(x, y, z) {
         nZ = beginPos[2] + zt;
       }
     }
-    if (selectedLayers[k].property("Position").numKeys == 0) {
-      selectedLayers[k].property("Position").setValue([nX, nY, nZ]);
-    } else {
-      selectedLayers[k].property("Position").setValueAtTime(app.project.activeItem.time, [nX, nY, nZ]);
+    if (currentLayer.property("Position").dimensionsSeparated){
+      if (currentLayer.property("Transform").property("X Position").numKeys == 0) {
+        currentLayer.property("Transform").property("X Position").setValue(nX);
+      }else{
+        currentLayer.property("Transform").property("X Position").setValueAtTime(comp.time, nX);
+      }
+      if (currentLayer.property("Transform").property("Y Position").numKeys == 0) {
+        currentLayer.property("Transform").property("Y Position").setValue(nY);
+      }else{
+        currentLayer.property("Transform").property("Y Position").setValueAtTime(comp.time, nY);
+      }
+      if (currentLayer.threeDLayer){
+        if (currentLayer.property("Transform").property("Z Position").numKeys == 0) {
+          currentLayer.property("Transform").property("Z Position").setValue(nZ);
+        }else{
+          currentLayer.property("Transform").property("Z Position").setValueAtTime(comp.time, nZ);
+        }
+      }
+    }else{
+      if (currentLayer.property("Position").numKeys == 0) {
+        currentLayer.property("Position").setValue([nX, nY, nZ]);
+      } else {
+        currentLayer.property("Position").setValueAtTime(app.project.activeItem.time, [nX, nY, nZ]);
+      }
     }
-
   }
   app.endUndoGroup();
 }
@@ -2383,9 +2440,20 @@ function StaggerPositions(x, y, z) {
 
 function CenterPositions(x, y, z) {
   app.beginUndoGroup("AS : Center Positions");
+  var comp = app.project.activeItem;
   var selectedLayers = app.project.activeItem.selectedLayers;
   for (var k = 0; k < selectedLayers.length; k++) {
-    var currentPos = selectedLayers[k].property("Position").value;
+    var currentLayer = selectedLayers[k];
+    var currentPos = [comp.width, comp.height];
+    if (currentLayer.property("Position").dimensionsSeparated){
+      if(currentLayer.threeDLayer){
+        currentPos = [currentLayer.property("Transform").property("X Position").value, currentLayer.property("Transform").property("Y Position").value, currentLayer.property("Transform").property("Z Position").value];
+      }else{
+        currentPos = [currentLayer.property("Transform").property("X Position").value, currentLayer.property("Transform").property("Y Position").value];
+      }
+    }else{
+      currentPos = currentLayer.property("Position").value;
+    }
     var nX = currentPos[0];
     var nY = currentPos[1];
     var nZ = currentPos[2];
@@ -2398,10 +2466,30 @@ function CenterPositions(x, y, z) {
     if (z) {
       nZ = 0;
     }
-    if (selectedLayers[k].property("Position").numKeys == 0) {
-      selectedLayers[k].property("Position").setValue([nX, nY, nZ]);
-    } else {
-      selectedLayers[k].property("Position").setValueAtTime(app.project.activeItem.time, [nX, nY, nZ]);
+    if (currentLayer.property("Position").dimensionsSeparated){
+      if (currentLayer.property("Transform").property("X Position").numKeys == 0) {
+        currentLayer.property("Transform").property("X Position").setValue(nX);
+      }else{
+        currentLayer.property("Transform").property("X Position").setValueAtTime(comp.time, nX);
+      }
+      if (currentLayer.property("Transform").property("Y Position").numKeys == 0) {
+        currentLayer.property("Transform").property("Y Position").setValue(nY);
+      }else{
+        currentLayer.property("Transform").property("Y Position").setValueAtTime(comp.time, nY);
+      }
+      if (currentLayer.threeDLayer){
+        if (currentLayer.property("Transform").property("Z Position").numKeys == 0) {
+          currentLayer.property("Transform").property("Z Position").setValue(nZ);
+        }else{
+          currentLayer.property("Transform").property("Z Position").setValueAtTime(comp.time, nZ);
+        }
+      }
+    }else{
+      if (currentLayer.property("Position").numKeys == 0) {
+        currentLayer.property("Position").setValue([nX, nY, nZ]);
+      } else {
+        currentLayer.property("Position").setValueAtTime(app.project.activeItem.time, [nX, nY, nZ]);
+      }
     }
   }
   app.endUndoGroup();
@@ -2418,7 +2506,7 @@ function RadialPosition(rad, num, duplicate, rotate) {
       alert("Select some layers to position.");
     }
     return false;
-  }else if (selectedLayers.length > 1) {
+  } else if (selectedLayers.length > 1) {
     if (duplicate) {
       alert("Select one layer to duplicate.");
       return false;
@@ -2444,9 +2532,9 @@ function RadialPosition(rad, num, duplicate, rotate) {
     var pos = (cen + [x_offset, y_offset] * rad);
     var l = null;
     if (duplicate) {
-      if(k==0){
+      if (k == 0) {
         l = selectedLayers[0];
-      }else{
+      } else {
         l = selectedLayers[0].duplicate();
         l.moveAfter(prevLayer);
         prevLayer = l;
@@ -2454,11 +2542,25 @@ function RadialPosition(rad, num, duplicate, rotate) {
     } else {
       l = selectedLayers[k];
     }
-    if (l.property("Position").numKeys == 0) {
-      l.property("Position").setValue(pos);
+    if (l.property("Transform").property("Position").dimensionsSeparated) {
+      if (l.property("Transform").property("X Position").numKeys == 0) {
+        l.property("Transform").property("X Position").setValue(pos[0]);
+      } else {
+        l.property("Transform").property("X Position").setValueAtTime(app.project.activeItem.time, pos[0]);
+      }
+      if (l.property("Transform").property("Y Position").numKeys == 0) {
+        l.property("Transform").property("Y Position").setValue(pos[1]);
+      } else {
+        l.property("Transform").property("Y Position").setValueAtTime(app.project.activeItem.time, pos[1]);
+      }
     } else {
-      l.property("Position").setValueAtTime(app.project.activeItem.time, pos);
+      if (l.property("Position").numKeys == 0) {
+        l.property("Position").setValue(pos);
+      } else {
+        l.property("Position").setValueAtTime(app.project.activeItem.time, pos);
+      }
     }
+
     if (rotate) {
       if (l.property("Rotation").numKeys == 0) {
         l.property("Rotation").setValue(sliceAngle * k);
@@ -2537,23 +2639,120 @@ function GridPositions(r, c, s, check1, rg, cg, sg, check2, duplicate, grid3D) {
           currentLayer = selectedLayers[currentLayerNum];
         }
         if (currentLayer != null) {
-          if(grid3D){
+          if(grid3D && !currentLayer.threeDLayer){
             currentLayer.threeDLayer=true;
           }
           var curPosition = [((x - 1) * rowGap), ((y - 1) * colGap), ((z - 1) * stepGap)];
           var centerX = app.project.activeItem.width / 2;
           var centerY = app.project.activeItem.height / 2;
-          var centerPosition = [centerX, centerY];
-          var offsetPosition = [(rowGap * (rows - 1)) / 2, (colGap * (cols - 1)) / 2];
-          if (currentLayer.property("Position").numKeys == 0) {
-            currentLayer.property("Position").setValue(curPosition + centerPosition - offsetPosition);
-          } else {
-            currentLayer.property("Position").setValueAtTime(app.project.activeItem.time, curPosition + centerPosition - offsetPosition);
+          var centerZ = 0;
+          var centerPosition = [centerX, centerY, centerZ];
+          var offsetPosition = [(rowGap * (rows - 1)) / 2, (colGap * (cols - 1)) / 2, (stepGap * (steps - 1)) / 2];
+
+          if(currentLayer.property("Transform").property("Position").dimensionsSeparated){
+
+            if (currentLayer.property("Transform").property("X Position").numKeys == 0) {
+              currentLayer.property("Transform").property("X Position").setValue(curPosition[0] + centerPosition[0] - offsetPosition[0]);
+            }else{
+              currentLayer.property("Transform").property("X Position").setValueAtTime(app.project.activeItem.time, curPosition[0] + centerPosition[0] - offsetPosition[0]);
+            }
+            if (currentLayer.property("Transform").property("Y Position").numKeys == 0) {
+              currentLayer.property("Transform").property("Y Position").setValue(curPosition[1] + centerPosition[1] - offsetPosition[1]);
+            }else{
+              currentLayer.property("Transform").property("Y Position").setValueAtTime(app.project.activeItem.time, curPosition[1] + centerPosition[1] - offsetPosition[1]);
+            }
+            if(currentLayer.threeDLayer){
+              if (currentLayer.property("Transform").property("Z Position").numKeys == 0) {
+                currentLayer.property("Transform").property("Z Position").setValue(curPosition[2] + centerPosition[2] - offsetPosition[2]);
+              }else{
+                currentLayer.property("Transform").property("Z Position").setValueAtTime(app.project.activeItem.time, curPosition[2] + centerPosition[2] - offsetPosition[2]);
+              }
+            }
+          }else{
+            if (currentLayer.property("Transform").property("Position").numKeys == 0) {
+              currentLayer.property("Transform").property("Position").setValue(curPosition + centerPosition - offsetPosition);
+            } else {
+              currentLayer.property("Transform").property("Position").setValueAtTime(app.project.activeItem.time, curPosition + centerPosition - offsetPosition);
+            }
           }
           currentLayerNum++;
         } else {
           break;
         }
+      }
+    }
+  }
+  app.endUndoGroup();
+}
+
+
+function GridMove(r1, r2, r3, r4, am, mult, check) {
+  app.beginUndoGroup("AS : Grid Move");
+  var selectedLayers = app.project.activeItem.selectedLayers;
+  var slices = 2;
+  if (r3) {
+    slices = 4;
+  }
+  if (r4) {
+    slices = 8;
+  }
+  var selectedLayers = app.project.activeItem.selectedLayers;
+  var initAm = am;
+  for (var k = 0; k < selectedLayers.length; k++) {
+    var currentLayer = selectedLayers[k];
+    var ran = Math.floor(Math.random() * slices);
+    var ran2 = Math.round(Math.random() * mult);
+
+    if (r1) {
+      ran = Math.floor(Math.random() * 2); //0,1
+    } else if (r2) {
+      ran = (Math.floor(Math.random() * 2) + 2); //2,3
+    }
+
+    if (!check) {
+      while (ran2 <= 0) {
+        ran2 = Math.round(Math.random() * mult);
+      }
+    }
+    var addAmount = [0, 0, 0];
+    var am2 = am * ran2;
+
+    if (ran == 0) {
+      addAmount = [0, am2, 0];
+    } else if (ran == 1) {
+      addAmount = [0, am2 * -1, 0];
+    } else if (ran == 2) {
+      addAmount = [am2 * -1, 0, 0];
+    } else if (ran == 3) {
+      addAmount = [am2, 0, 0];
+    } else if (ran == 4) {
+      addAmount = [am2, am2, 0];
+    } else if (ran == 5) {
+      addAmount = [am2, am2 * -1, 0];
+    } else if (ran == 6) {
+      addAmount = [am2 * -1, am2, 0];
+    } else if (ran == 7) {
+      addAmount = [am2 * -1, am2 * -1, 0];
+    }
+    if(currentLayer.property("Transform").property("Position").dimensionsSeparated){
+      var posX = currentLayer.property("Transform").property("X Position").value + addAmount[0];
+      var posY = currentLayer.property("Transform").property("Y Position").value + addAmount[1];
+      if (currentLayer.property("Transform").property("X Position").numKeys == 0) {
+        currentLayer.property("Transform").property("X Position").setValue(posX);
+      } else {
+        currentLayer.property("Transform").property("X Position").setValueAtTime(app.project.activeItem.time, posX);
+      }
+      if (currentLayer.property("Transform").property("Y Position").numKeys == 0) {
+        currentLayer.property("Transform").property("Y Position").setValue(posY);
+      } else {
+        currentLayer.property("Transform").property("Y Position").setValueAtTime(app.project.activeItem.time, posY);
+      }
+    }else{
+      var pos = currentLayer.property("Position").value + addAmount;
+      if (currentLayer.property("Position").numKeys == 0) {
+        currentLayer.property("Position").setValue(pos);
+      } else {
+        currentLayer.property("Position").setValueAtTime(app.project.activeItem.time, pos);
       }
     }
   }
@@ -2896,6 +3095,10 @@ function Stringer(am, tanCheck, closedCheck, existingCheck) {
   if(selectedLayers.length>0){
     for(var l=0; l<selectedLayers.length; l++){
       nameArray.push(selectedLayers[l].name);
+      if(selectedLayers[l].threeDLayer){
+        alert("Make sure all layers are 2D.");
+        return false;
+      }
     }
     if(checkForUniqueNames(nameArray)){
       alert("Make sure all layers have unique names.");
@@ -3006,62 +3209,6 @@ function Stringer(am, tanCheck, closedCheck, existingCheck) {
     express += "createPath(points=[" + pointsString + "], inTangents=[" + inTanString + "], outTangents=[" + outTanString + "], is_closed=effect('Closed')('Checkbox'));"
     stringShape.property("ADBE Root Vectors Group").property(1).property("ADBE Vectors Group").property("ADBE Vector Shape - Group").path.expression = express;
     stringShape.moveAfter(lastLayer);
-  }
-  app.endUndoGroup();
-}
-
-function GridMove(r1, r2, r3, r4, am, mult, check) {
-  app.beginUndoGroup("AS : Grid Move");
-  var slices = 2;
-  if (r3) {
-    slices = 4;
-  }
-  if (r4) {
-    slices = 8;
-  }
-  var selectedLayers = app.project.activeItem.selectedLayers;
-  var initAm = am;
-  for (var k = 0; k < selectedLayers.length; k++) {
-    var ran = Math.floor(Math.random() * slices);
-    var ran2 = Math.round(Math.random() * mult);
-
-    if (r1) {
-      ran = Math.floor(Math.random() * 2); //0,1
-    } else if (r2) {
-      ran = (Math.floor(Math.random() * 2) + 2); //2,3
-    }
-
-    if (!check) {
-      while (ran2 <= 0) {
-        ran2 = Math.round(Math.random() * mult);
-      }
-    }
-    var addAmount = [0, 0, 0];
-    var am2 = am * ran2;
-
-    if (ran == 0) {
-      addAmount = [0, am2, 0];
-    } else if (ran == 1) {
-      addAmount = [0, am2 * -1, 0];
-    } else if (ran == 2) {
-      addAmount = [am2 * -1, 0, 0];
-    } else if (ran == 3) {
-      addAmount = [am2, 0, 0];
-    } else if (ran == 4) {
-      addAmount = [am2, am2, 0];
-    } else if (ran == 5) {
-      addAmount = [am2, am2 * -1, 0];
-    } else if (ran == 6) {
-      addAmount = [am2 * -1, am2, 0];
-    } else if (ran == 7) {
-      addAmount = [am2 * -1, am2 * -1, 0];
-    }
-    var pos = selectedLayers[k].property("Position").value + addAmount;
-    if (selectedLayers[k].property("Position").numKeys == 0) {
-      selectedLayers[k].property("Position").setValue(pos);
-    } else {
-      selectedLayers[k].property("Position").setValueAtTime(app.project.activeItem.time, pos);
-    }
   }
   app.endUndoGroup();
 }
@@ -3210,6 +3357,7 @@ function Effector(pCheck, sCheck, rCheck, oCheck) {
 
   if (pCheck) {
     var posStr = "// AS : Effector position";
+    var posStr2 = "";
     posStr += "\n";
     posStr += "var EF = thisComp.layer('" + controller.name + "');";
     posStr += "\n";
@@ -3234,13 +3382,13 @@ function Effector(pCheck, sCheck, rCheck, oCheck) {
     posStr += "\n\t";
     posStr += "var v2 = ((r-delta)*(p*ep))+((r-delta)*ran);";
     posStr += "\n\t";
-    posStr += "value + [xa*v2,ya*v2];";
-    posStr += "\n";
-    posStr += "} else {";
-    posStr += "\n\t";
-    posStr += "value;";
-    posStr += "\n";
-    posStr += "}";
+
+    posStr2 += "\n";
+    posStr2 += "} else {";
+    posStr2 += "\n\t";
+    posStr2 += "value;";
+    posStr2 += "\n";
+    posStr2 += "}";
   }
 
   if (sCheck) {
@@ -3376,7 +3524,12 @@ function Effector(pCheck, sCheck, rCheck, oCheck) {
   for (var k = 0; k < selectedLayers.length; k++) {
     var l = selectedLayers[k];
     if (pCheck) {
-      l.transform.position.expression = posStr;
+      if(l.property("Transform").property("Position").dimensionsSeparated){
+        l.property("Transform").property("X Position").expression = posStr + "value + xa*v2" + posStr2;
+        l.property("Transform").property("Y Position").expression = posStr + "value + ya*v2;" + posStr2;
+      }else{
+        l.transform.position.expression = posStr + "value + [xa*v2,ya*v2];" + posStr2;
+      }
     }
     if (sCheck) {
       l.transform.scale.expression = scaStr;
