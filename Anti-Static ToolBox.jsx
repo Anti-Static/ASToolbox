@@ -3364,7 +3364,7 @@ function Effector(pCheck, sCheck, rCheck, oCheck) {
     posStr += baseStr;
     posStr += "seedRandom(EF.effect('Main Random Seed')('Slider'), true);"
     posStr += "\n\t";
-    posStr += "var ran = (Math.random()-.5)*(EF.effect('Main Effector Random')('Slider')/100);";
+    posStr += "var ran = (random()-.5)*(EF.effect('Main Effector Random')('Slider')/100);";
     posStr += "\n\t";
     posStr += "var a = Math.atan2((p1[1] - p2[1]),(p1[0] - p2[0]));";
     posStr += "\n\t";
@@ -3399,7 +3399,7 @@ function Effector(pCheck, sCheck, rCheck, oCheck) {
     scaStr += baseStr;
     scaStr += "seedRandom(EF.effect('Main Random Seed')('Slider'), true);"
     scaStr += "\n\t";
-    scaStr += "var ran = (Math.random()-.5)*(EF.effect('Main Effector Random')('Slider')/10);";
+    scaStr += "var ran = (random()-.5)*(EF.effect('Main Effector Random')('Slider')/10);";
     scaStr += "\n\t";
     scaStr += "var f = EF.effect('Effector Falloff')('Slider');";
     scaStr += "\n\t";
@@ -3426,7 +3426,7 @@ function Effector(pCheck, sCheck, rCheck, oCheck) {
     rotStr += baseStr;
     rotStr += "seedRandom(EF.effect('Main Random Seed')('Slider'), true);"
     rotStr += "\n\t";
-    rotStr += "var ran = (Math.random()-.5)*(EF.effect('Main Effector Random')('Slider')/10);";
+    rotStr += "var ran = (random()-.5)*(EF.effect('Main Effector Random')('Slider')/10);";
     rotStr += "\n\t";
     rotStr += "var f = EF.effect('Effector Falloff')('Slider');";
     rotStr += "\n\t";
@@ -3477,7 +3477,7 @@ function Effector(pCheck, sCheck, rCheck, oCheck) {
     opaStr += baseStr;
     opaStr += "seedRandom(EF.effect('Main Random Seed')('Slider'), true);"
     opaStr += "\n\t";
-    opaStr += "var ran = (Math.random()-.5)*(EF.effect('Main Effector Random')('Slider')/10);";
+    opaStr += "var ran = (random()-.5)*(EF.effect('Main Effector Random')('Slider')/10);";
     opaStr += "\n\t";
     opaStr += "var f = EF.effect('Effector Falloff')('Slider');";
     opaStr += "\n\t";
@@ -3503,7 +3503,7 @@ function Effector(pCheck, sCheck, rCheck, oCheck) {
   auxStr += baseStr;
   auxStr += "seedRandom(EF.effect('Aux Random Seed')('Slider'), true)"
   auxStr += "\n\t";
-  auxStr += "var ran = (Math.random()-.5)*(EF.effect('Aux Random')('Slider')/100);";
+  auxStr += "var ran = (random()-.5)*(EF.effect('Aux Random')('Slider')/100);";
   auxStr += "\n\t";
   auxStr += "var f = EF.effect('Effector Falloff')('Slider');";
   auxStr += "\n\t";
