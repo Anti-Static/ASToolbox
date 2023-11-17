@@ -2018,7 +2018,7 @@ function RandomizeInPoints(num, rel) {
   var selectedLayers = myComp.selectedLayers;
   var t = myComp.time;
   for (var k = 0; k < selectedLayers.length; k++) {
-    var r = Math.round(Math.random() * frames);
+    var r = Math.round(random() * frames);
     var layer = selectedLayers[k];
     if(rel){
       t = layer.inPoint;
